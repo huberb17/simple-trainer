@@ -1,5 +1,5 @@
 from abc import ABC
-from file_handler import PlayerFileHandler, GameFileHandler
+from .file_handler import PlayerFileHandler, GameFileHandler
 
 class Games(list):
     def __init__(self):

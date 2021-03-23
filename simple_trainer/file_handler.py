@@ -1,7 +1,7 @@
 from abc import ABC
 import os
-from player import Player
-from stats import TurnStat, GameStats
+from .player import Player
+from .stats import TurnStat, GameStats
 
 class FileHandler(ABC):
     def __init__(self, file_name):
