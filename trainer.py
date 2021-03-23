@@ -1,11 +1,12 @@
-import os
 import time
 from abc import ABC
 from random import randint
-from file_handler import PlayerFileHandler, GameFileHandler, StatsFileHandler
-from player import Player
-from game import Games, MiniAddGame, MiniMultiGame
-from stats import GameStats
+
+from simple_trainer.file_handler import PlayerFileHandler, GameFileHandler, StatsFileHandler
+from simple_trainer.player import Player
+from simple_trainer.stats import GameStats
+from simple_trainer.game import Games, MiniAddGame, MiniMultiGame
+from simple_trainer.utils import clear, str_input, int_input
 
 class GameBoard:
     def __init__(self):
@@ -25,23 +26,6 @@ class GameBoard:
 
 class ResultManager:
     pass
-
-def str_input(text):
-    res = input(text)
-    while len(res.strip()) == 0:
-        res = input(text)
-    return res
-
-def int_input(text):
-    while True:
-        try:
-            res = int(input(text))
-            return res
-        except:
-            pass
-
-def clear():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def main():
