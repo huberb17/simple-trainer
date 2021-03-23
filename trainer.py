@@ -45,8 +45,11 @@ def main():
             print(f'[{players.index(player)}]: {player.name} ({player.highscore})')
             last_index = players.index(player)
         print(f'[{last_index + 1}]: Neuen Spieler anlegen')
+        print(f'[{last_index + 2}]: Beenden')
         choice = int_input('Auswahl: ')
-        if choice > last_index:
+        if choice > last_index + 1:
+            exit(0)
+        elif choice > last_index:
             name = str_input('Gib Spielernamen ein: ')
             player = game_board.add_player(name)
         else:
