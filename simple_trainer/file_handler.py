@@ -4,18 +4,26 @@ from .player import Player
 from .stats import TurnStat, GameStats
 
 class FileHandler(ABC):
-    def __init__(self, file_name):
+    def __init__(self, file_name: str):
         super().__init__()
         self.file_name = file_name
+    
+    def set_datafile(self, file_name: str):
+        self.file_name = file_name
+
     def load(self):
         pass
     def store(self):
-        pass
+        if not os.path.exists(self.file_name):
+            path = os.path.dirname(self.file_name)
+            if not os.path.exists(path):
+                os.makedirs(path)
+        
 
 class PlayerFileHandler(FileHandler):
-    def __init__(self, file_name):
+    def __init__(self, file_name = None):
         super().__init__(file_name)
-        
+    
     def load(self):
         if not os.path.exists(self.file_name): return []
         content = []
@@ -25,12 +33,13 @@ class PlayerFileHandler(FileHandler):
         return [Player(x.strip().split(';')[0], x.strip().split(';')[1]) for x in content]
 
     def store(self, players):
+        super().store()
         with open(self.file_name, 'w') as f:
             f.writelines([f'{x.name};{x.highscore}\n' for x in players])
 
 
 class GameFileHandler(FileHandler):
-    def __init__(self, file_name):
+    def __init__(self, file_name=None):
         super().__init__(file_name)
         
     def load(self):
@@ -42,11 +51,12 @@ class GameFileHandler(FileHandler):
         return [(x.strip().split(';')[0], x.strip().split(';')[1]) for x in content]
 
     def store(self, calcs):
+        super().store()
         with open(self.file_name, 'w') as f:
             f.writelines([f'{x[0]};{x[1]}\n' for x in calcs])
 
 class StatsFileHandler(FileHandler):
-    def __init__(self, file_name):
+    def __init__(self, file_name = None):
         super().__init__(file_name)
 
     def load(self):
@@ -68,6 +78,7 @@ class StatsFileHandler(FileHandler):
         return game_stats
 
     def store(self, stats):
+        super().store()
         with open(self.file_name, 'w') as f:
             for x in stats.keys():
                 player_stats = stats[x]

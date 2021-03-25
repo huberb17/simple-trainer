@@ -1,27 +1,48 @@
+import os
 import time
 from abc import ABC
 from random import randint
 
-from simple_trainer.file_handler import PlayerFileHandler, GameFileHandler, StatsFileHandler
+from simple_trainer.file_handler import (GameFileHandler, PlayerFileHandler,
+                                         StatsFileHandler)
+from simple_trainer.game import Games, MiniAddGame, MiniMultiGame
 from simple_trainer.player import Player
 from simple_trainer.stats import GameStats
-from simple_trainer.game import Games, MiniAddGame, MiniMultiGame
-from simple_trainer.utils import clear, str_input, int_input
+from simple_trainer.utils import clear, int_input, str_input
+
 
 class GameBoard:
-    def __init__(self):
-        self.players = PlayerFileHandler('players.data').load()
-        self.games = Games()
-        self.stats = StatsFileHandler('Stats.data').load()
+    """Central game class, holds players, games and statistics.
+    """    
+    def __init__(self, path: str):
+        self.data_path : str = path
+        self.players : list = None
+        self.games : list = None
+        self.stats : list = None
 
-    def add_player(self, name):
+    def load_games(self, game_handler: GameFileHandler) -> list:
+        self.games = Games(self.data_path, game_handler)
+        return self.games
+        
+    def set_stats_handler(self, stats_handler: StatsFileHandler) -> GameStats:
+        self.stats_handler = stats_handler
+        self.stats_handler.set_datafile(os.path.join(self.data_path, 'stats.data'))
+        self.stats = self.stats_handler.load()
+        return self.stats
+
+    def load_players(self, player_handler: PlayerFileHandler) -> list:
+        self.player_handler = player_handler
+        self.player_handler.set_datafile(os.path.join(self.data_path, 'players.data'))
+        self.players = self.player_handler.load()
+        return self.players
+
+    def add_player(self, name : str) -> Player:
         self.players.append(Player(name, 0))
-        PlayerFileHandler('players.data').store(self.players)
         return self.players[len(self.players)-1]
 
     def store_result(self):
-        PlayerFileHandler('players.data').store(self.players)
-        StatsFileHandler('Stats.data').store(self.stats.stats)
+        self.player_handler.store(self.players)
+        self.stats_handler.store(self.stats.stats)
 
 
 class ResultManager:
@@ -29,10 +50,10 @@ class ResultManager:
 
 
 def main():
-    game_board = GameBoard()
-    players = game_board.players
-    games = game_board.games
-    stats = game_board.stats
+    game_board = GameBoard('data')
+    players = game_board.load_players(PlayerFileHandler())
+    games = game_board.load_games(GameFileHandler())
+    stats = game_board.set_stats_handler(StatsFileHandler())
 
     clear()
     if not players:
